@@ -10,7 +10,15 @@
         <Title>LughUtils</Title>
         <Description>C# Utils Companion Library for LughSharp</Description>
         <PackageProjectUrl>https://github.com/biffbaff64/LughUtils</PackageProjectUrl>
+        <PackageLicenseUrl>License</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/biffbaff64/LughUtils</RepositoryUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Version>0.0.1</Version>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
