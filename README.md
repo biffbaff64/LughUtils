@@ -1,5 +1,8 @@
 ﻿LUGHUTILS Utility Library
 =========================
+                                                         
+NOTE: This project is currently in development. Most classes still need to be
+      fully documented, and some features may be missing.
 
 LUGHUTILS is a utility library designed to provide a collection of useful functions
 and classes for various programming tasks. It aims to simplify common operations and
@@ -38,7 +41,94 @@ You can include the source files in your project or compile them into a DLL for 
 Features
 --------
 
-To do: Add a list of features provided by the library.
+ - Alignment
+ - BaseClassFactory
+ - BinaryHeap
+ - Bits
+ - Buffer<T>
+ - BufferUtils
+ - ByteOrder
+ - BytePointerToString
+ - CaseInsensitiveEnumArrayConverterFactory
+ - ComparableTimSort
+ - Constants
+ - DataInput
+ - DataOutput
+ - DataUtils
+ - GCSuppressor
+ - GdxNativesLoader
+ - HashHelpers
+ - IClearablePool
+ - IClipboard
+ - ICloseable
+ - IDrawable
+ - IManaged
+ - IReadable
+ - IResetable
+ - IRunnable
+ - LughTestAdapter
+ - PerformanceCounter
+ - PerformanceCounters
+ - PhysicsUtils
+ - PropertiesUtils
+ - QuadTreeFloat
+ - QuickSelect
+ - Scaling
+ - ScreenUtils
+ - Selector
+ - SingletonBase<T>
+ - SortUtils
+ - StringUtils
+ - SystemArrayUtils
+ - Timer
+ - TimeUtils
+ - TimSort
+
+ - Collections
+   - ArrayList
+   - ArrayListEnumerator
+   - ByteArray
+   - DelayedRemovalList
+   - DictionaryExtensions
+   - IdentityMap
+   - IPredicate
+   - ListExtensions
+   - ObjectMap
+   - OrderedMap
+   - PredicateIterable
+   - PredicateIterator
+   - SnapshotArrayList
+
+ - Exceptions
+   - AssetNotLoadedException
+   - BufferOverflowException
+   - BufferUnderflowException
+   - GdxRuntimeException
+   - Guard
+   - NumberFormatException
+   - ReadOnlyBufferException
+   - SerializationException
+
+ - Logging
+   - FPSLogger
+   - IPreferences
+   - Logger
+   - Preferences
+   - Stats
+
+ - Maths
+   - FloatCounter
+   - MathUtils
+   - NumberUtils
+   - WindowedMean
+
+ - Pooling
+   - FlushablePool
+   - IPoolable
+   - Pool
+   - PooledLinkedList
+   - Pools
+   - ReflectionPool
 
 Contributing
 ------------
