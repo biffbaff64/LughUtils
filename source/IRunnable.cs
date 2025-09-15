@@ -24,6 +24,7 @@
 
 namespace LughUtils.source;
 
+[PublicAPI]
 public interface IRunnable
 {
     public delegate void Runnable();
