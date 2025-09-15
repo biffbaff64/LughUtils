@@ -24,16 +24,13 @@
 
 namespace LughUtils.source.Maths;
 
+/// <summary>
+/// Tracks statistics (count, sum, min, max, average, latest, and windowed mean)
+/// for a sequence of floating-point values, with optional windowed mean support.
+/// </summary>
 [PublicAPI]
 public class FloatCounter
 {
-    public FloatCounter( int windowSize )
-    {
-        Mean = windowSize > 1 ? new WindowedMean( windowSize ) : null;
-
-        Reset();
-    }
-
     /// <summary>
     /// The amount of values added
     /// </summary>
@@ -73,6 +70,15 @@ public class FloatCounter
     /// Provides access to the WindowedMean if any (can be null)
     /// </summary>
     public WindowedMean? Mean { get; set; }
+
+    // ========================================================================
+    
+    public FloatCounter( int windowSize )
+    {
+        Mean = windowSize > 1 ? new WindowedMean( windowSize ) : null;
+
+        Reset();
+    }
 
     /// <summary>
     /// Add a value and update all fields.
@@ -125,6 +131,7 @@ public class FloatCounter
         Mean?.Clear();
     }
 
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"FloatCounter: count={Count}, total={Total}, min={Min},"

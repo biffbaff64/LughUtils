@@ -41,22 +41,28 @@ You can include the source files in your project or compile them into a DLL for 
 Features
 --------
 
- - Alignment
- - BaseClassFactory
- - BinaryHeap
- - Bits
- - Buffer<T>
+ - <b>Alignment</b>
+    - Provides utility methods and constants for handling alignment using bit flags.
+      This is useful for positioning and aligning UI elements or game objects.
+ - <b>BaseClassFactory</b>
+    - Provides a base class for factory implementations that require initialization logic.
+ - <b>BinaryHeap</b>
+    - A binary heap that stores nodes which each have a float value and are sorted either
+      lowest first or highest first.
+ - <b>Bits</b>
+    - A bitset, without size limitation, allows comparison via bitwise operators to other bitfields.
+ - <b>Buffer</b>
+    - Represents a generic, resizable buffer for unmanaged types, supporting byte-level and
+      element-level operations, endianness, and direct/bulk access.
  - BufferUtils
  - ByteOrder
  - BytePointerToString
  - CaseInsensitiveEnumArrayConverterFactory
  - ComparableTimSort
- - Constants
  - DataInput
  - DataOutput
  - DataUtils
  - GCSuppressor
- - GdxNativesLoader
  - HashHelpers
  - IClearablePool
  - IClipboard
@@ -66,7 +72,6 @@ Features
  - IReadable
  - IResetable
  - IRunnable
- - LughTestAdapter
  - PerformanceCounter
  - PerformanceCounters
  - PhysicsUtils
@@ -74,18 +79,20 @@ Features
  - QuadTreeFloat
  - QuickSelect
  - Scaling
- - ScreenUtils
  - Selector
- - SingletonBase<T>
+ - SingletonBase
  - SortUtils
  - StringUtils
  - SystemArrayUtils
- - Timer
- - TimeUtils
+ - <b>TimeUtils</b>
+   - Helper functions for working with System.DateTime and System.TimeSpan.
  - TimSort
 
- - Collections
-   - ArrayList
+ - <b>Collections</b>
+   - <b>ArrayList</b>
+     - A resizable, ordered or unordered array of objects. If unordered, this class avoids
+     - a memory copy when removing elements (the last element is moved to the removed
+     - element's position).
    - ArrayListEnumerator
    - ByteArray
    - DelayedRemovalList
@@ -99,36 +106,47 @@ Features
    - PredicateIterator
    - SnapshotArrayList
 
- - Exceptions
-   - AssetNotLoadedException
-   - BufferOverflowException
-   - BufferUnderflowException
-   - GdxRuntimeException
-   - Guard
-   - NumberFormatException
-   - ReadOnlyBufferException
-   - SerializationException
+ - <b>Exceptions</b>
+   - <b>AssetNotLoadedException</b>
+     - Exception used for signalling asset load failures.
+   - <b>GdxRuntimeException</b>
+     - Typed runtime exception for use when no suitable exception type exists.
+   - <b>Guard</b>
+     - Utility Exception class for use in validating arguments.
+   - <b>ReadOnlyBufferException</b>
+     - Unchecked exception thrown when a content-mutation method such as put or compact
+       is invoked upon a read-only buffer.
 
- - Logging
-   - FPSLogger
-   - IPreferences
-   - Logger
-   - Preferences
-   - Stats
+ - <b>Logging</b>
+   - <b>FPSLogger</b>
+     - A simple helper class to log the frames per seconds achieved.
+   - <b>Logger</b>
+     - A class to write debug messages to console and a text file. Primarily intended for
+       flow tracing, messages will display calling file/class/methods and any provided
+       debug message.
+   - <b>Preferences ( With accompanying IPreferences interface )</b>
+     - A Persistant Properties Manager.
+   - <b>Stats</b>
+     - An extension of the Preferences class to provide a simple way to log statistics.
 
- - Maths
-   - FloatCounter
-   - MathUtils
-   - NumberUtils
-   - WindowedMean
+ - <b>Maths</b>
+   - <b>FloatCounter</b>
+     - Tracks statistics (count, sum, min, max, average, latest, and windowed mean) for
+       a sequence of floating-point values, with optional windowed mean support.
+   - <b>MathUtils</b>
+     - A Collection of mathematical functions and data.
+   - <b>NumberUtils</b>
+     - A Collection of mathematical functions for integer and floating-point values.
+   - <b>WindowedMean</b>
+     - A simple class keeping track of the mean of a stream of values within a certain window.
 
- - Pooling
-   - FlushablePool
-   - IPoolable
-   - Pool
-   - PooledLinkedList
-   - Pools
-   - ReflectionPool
+ - <b>Pooling</b>
+   - <b>Pool ( with accompanying IPoolable interface )</b>
+     - A Utility class for managing a pool of objects.
+   - <b>PooledLinkedList</b>
+     - A simple linked list that pools its nodes.
+   - <b>Pools</b>
+     - Stores a map of Pool<T> instances by type for convenient static access.
 
 Contributing
 ------------
@@ -147,3 +165,4 @@ Contact
 For any questions or inquiries, please contact the maintainer at richikin@gmail.com
 or visit the GitHub repository at www.github.com/biffbaff64/LughUtils.
 Thank you for using LUGHUTILS!
+

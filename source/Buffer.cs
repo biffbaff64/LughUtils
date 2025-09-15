@@ -24,24 +24,66 @@
 
 namespace LughUtils.source;
 
+/// <summary>
+/// Represents a generic, resizable buffer for unmanaged types, supporting
+/// byte-level and element-level operations, endianness, and direct/bulk access.
+/// </summary>
+/// <typeparam name="T">The element type of the buffer (must be unmanaged).</typeparam>
 [PublicAPI]
 public class Buffer< T > : IDisposable where T : unmanaged
 {
-    // All capacity/position/limit values are in Bytes
-    public int  Capacity    { get; private set; }
-    public int  Position    { get; set; }
-    public int  Limit       { get; set; }
-    public int  Length      { get; private set; }
+    /// <summary>
+    /// Gets the total capacity of the buffer in bytes.
+    /// </summary>
+    public int Capacity { get; private set; }
+
+    /// <summary>
+    /// Gets or sets the current position in the buffer (in bytes).
+    /// </summary>
+    public int Position { get; set; }
+
+    /// <summary>
+    /// Gets or sets the limit of the buffer (in bytes).
+    /// </summary>
+    public int Limit { get; set; }
+
+    /// <summary>
+    /// Gets the current length of valid data in the buffer (in bytes).
+    /// </summary>
+    public int Length { get; private set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the buffer uses big-endian byte order.
+    /// </summary>
     public bool IsBigEndian { get; set; }
-    public bool IsReadOnly  { get; set; }
-    public bool IsDirect    { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the buffer is read-only.
+    /// </summary>
+    public bool IsReadOnly { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the buffer is direct (not backed by managed memory).
+    /// </summary>
+    public bool IsDirect { get; set; }
 
     // ========================================================================
 
-    // Convenience properties for element-based operations
-    public int ElementCapacity => Capacity / _elementSize;
-    public int ElementPosition => Position / _elementSize;
-    public int ElementLength   => Length / _elementSize;
+    /// <summary>
+    /// Gets the capacity of the buffer in elements of type <typeparamref name="T"/>.
+    /// </summary>
+    public int ElementCapacity => ( Capacity / _elementSize );
+
+    /// <summary>
+    /// Gets the current position in the buffer in elements of type <typeparamref name="T"/>.
+    /// </summary>
+    public int ElementPosition => ( Position / _elementSize );
+
+    /// <summary>
+    /// Gets the current length of valid data in the buffer in elements
+    /// of type <typeparamref name="T"/>.
+    /// </summary>
+    public int ElementLength => ( Length / _elementSize );
 
     // ========================================================================
 
@@ -56,6 +98,9 @@ public class Buffer< T > : IDisposable where T : unmanaged
 
     // ========================================================================
 
+    /// <summary>
+    /// Creates a new Buffer with the specified initial capacity.
+    /// </summary>
     public Buffer( int elementCount )
     {
         IsBigEndian = !BitConverter.IsLittleEndian;
@@ -71,6 +116,10 @@ public class Buffer< T > : IDisposable where T : unmanaged
         Limit         = Capacity;
     }
 
+    /// <summary>
+    /// Creates a new Buffer that wraps the provided Memory{byte},
+    /// and with the specified byte order..
+    /// </summary>
     public Buffer( Memory< byte > memory, bool isBigEndian )
     {
         if ( memory.IsEmpty ) // Check if Memory<byte> is valid (not empty)
@@ -87,61 +136,6 @@ public class Buffer< T > : IDisposable where T : unmanaged
         Length        = 0;             // Initially Length is 0 for a new view
         Position      = 0;             // Initially Position is 0 for a new view
     }
-
-//    // ========================================================================
-//    // ========================================================================
-//    
-//    /// <summary>
-//    /// Creates a new IntBuffer whose content is a shared subsequence of this
-//    /// ByteBuffer's content. Changes to this ByteBuffer's content will be visible in
-//    /// the returned IntBuffer, and vice-versa. The position, limit, and mark of the
-//    /// new buffer will be independent of this buffer.
-//    /// </summary>
-//    /// <returns>A new IntBuffer instance.</returns>
-//    public Buffer< int > AsIntBuffer()
-//    {
-//        // Calculate capacity in ints based on ByteBuffer's byte capacity
-//        // Floor to avoid partial ints at the end
-//        var capacityInInts = ( int )Math.Floor( ( double )Capacity / sizeof( int ) );
-//
-//        // Create a new IntBuffer, sharing the _byteBuffer array
-//        return new Buffer< int >( _backingArray, 0, capacityInInts, IsBigEndian );
-//    }
-//
-//    /// <summary>
-//    /// Creates a new ShortBuffer whose content is a shared subsequence of this
-//    /// ByteBuffer's content. Changes to this ByteBuffer's content will be visible in
-//    /// the returned ShortBuffer, and vice-versa. The position, limit, and mark of the
-//    /// new buffer will be independent of this buffer.
-//    /// </summary>
-//    /// <returns>A new ShortBuffer instance.</returns>
-//    public Buffer< short > AsShortBuffer()
-//    {
-//        // Calculate capacity in shorts based on ByteBuffer's byte capacity
-//        // Floor to avoid partial shorts at the end
-//        var capacityInShorts = ( int )Math.Floor( ( double )Capacity / sizeof( short ) );
-//
-//        // Create a new ShortBuffer, sharing the _byteBuffer array
-//        return new Buffer< short >( _backingArray, 0, capacityInShorts, IsBigEndian );
-//    }
-//
-//    /// <summary>
-//    /// Creates a new FloatBuffer whose content is a shared subsequence of this
-//    /// ByteBuffer's content. Changes to this ByteBuffer's content will be visible in
-//    /// the returned FloatBuffer, and vice-versa. The position, limit, and mark of the
-//    /// new buffer will be independent of this buffer.
-//    /// </summary>
-//    /// <returns>A new FloatBuffer instance.</returns>
-//    public Buffer< float > AsFloatBuffer()
-//    {
-//        // Calculate capacity in floats based on ByteBuffer's byte capacity
-//        // Floor to avoid partial floats at the end
-//        var capacityInFloats = ( int )Math.Floor( ( double )Capacity / sizeof( float ) );
-//
-//        // Create a new FloatBuffer, sharing the _byteBuffer array
-//        return new Buffer< float >( _backingArray, 0, capacityInFloats, IsBigEndian );
-//    }
-
     // ========================================================================
 
     /// <summary>
@@ -1028,7 +1022,6 @@ public class Buffer< T > : IDisposable where T : unmanaged
 
         if ( Capacity > newCapacityInBytes )
         {
-//            var reductionAmount = Capacity - newCapacityInBytes;
             var newArray = new byte[ newCapacityInBytes ];
             Array.Copy( _backingArray, 0, newArray, 0, Math.Min( Length, newCapacityInBytes ) );
 
@@ -1144,7 +1137,11 @@ public class Buffer< T > : IDisposable where T : unmanaged
             Array.Clear( _backingArray, 0, _backingArray.Length );
             _backingArray = null!;
 
-            _memory = default;
+            _memory  = Memory< byte >.Empty;
+            Capacity = 0;
+            Position = 0;
+            Limit    = 0;
+            Length   = 0;
         }
     }
 }

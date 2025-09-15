@@ -30,7 +30,7 @@ namespace LughUtils.source.Pooling;
 [PublicAPI]
 public class Pool< T > where T : notnull
 {
-    public const int DefaultInitialCapacity = 16;
+    public const int DEFAULT_INITIAL_CAPACITY = 16;
 
     // Delegate for creating new instances of T
     public delegate T? NewObjectHandler();
@@ -57,7 +57,7 @@ public class Pool< T > where T : notnull
     // ========================================================================
 
     public Pool( NewObjectHandler newObjectFactory,
-                 int initialCapacity = DefaultInitialCapacity,
+                 int initialCapacity = DEFAULT_INITIAL_CAPACITY,
                  int max = int.MaxValue )
     {
         _newObjectFactory = newObjectFactory ??

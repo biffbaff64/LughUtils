@@ -44,6 +44,9 @@ public enum Align
     BottomRight = Bottom | Right,
 }
 
+/// <summary>
+/// Provides utility methods and constants for handling alignment using bit flags.
+/// </summary>
 [PublicAPI]
 public sealed class Alignment
 {
@@ -62,48 +65,60 @@ public sealed class Alignment
     // ========================================================================
 
     /// <summary>
-    /// Returns TRUE if the supplied position is aligned to the LEFT.
+    /// Determines whether the specified position is aligned to the left.
     /// </summary>
+    /// <param name="position">The alignment position value.</param>
+    /// <returns><c>true</c> if aligned to the left; otherwise, <c>false</c>.</returns>
     public static bool IsLeft( int position )
     {
         return ( position & LEFT ) != 0;
     }
 
     /// <summary>
-    /// Returns TRUE if the supplied position is aligned to the RIGHT.
+    /// Determines whether the specified position is aligned to the right.
     /// </summary>
+    /// <param name="position">The alignment position value.</param>
+    /// <returns><c>true</c> if aligned to the right; otherwise, <c>false</c>.</returns>
     public static bool IsRight( int position )
     {
         return ( position & RIGHT ) != 0;
     }
 
     /// <summary>
-    /// Returns TRUE if the supplied position is aligned to the TOP.
+    /// Determines whether the specified position is aligned to the top.
     /// </summary>
+    /// <param name="position">The alignment position value.</param>
+    /// <returns><c>true</c> if aligned to the top; otherwise, <c>false</c>.</returns>
     public static bool IsTop( int position )
     {
         return ( position & TOP ) != 0;
     }
 
     /// <summary>
-    /// Returns TRUE if the supplied position is aligned to the BOTTOM.
+    /// Determines whether the specified position is aligned to the bottom.
     /// </summary>
+    /// <param name="position">The alignment position value.</param>
+    /// <returns><c>true</c> if aligned to the bottom; otherwise, <c>false</c>.</returns>
     public static bool IsBottom( int position )
     {
         return ( position & BOTTOM ) != 0;
     }
 
     /// <summary>
-    /// Returns TRUE if the supplied position is aligned horizontally central.
+    /// Determines whether the specified position is horizontally centered (not left or right).
     /// </summary>
+    /// <param name="position">The alignment position value.</param>
+    /// <returns><c>true</c> if horizontally centered; otherwise, <c>false</c>.</returns>
     public static bool IsCenterHorizontal( int position )
     {
         return ( ( position & LEFT ) == 0 ) && ( ( position & RIGHT ) == 0 );
     }
 
     /// <summary>
-    /// Returns TRUE if the supplied position is aligned vertically central.
+    /// Determines whether the specified position is vertically centered (not top or bottom).
     /// </summary>
+    /// <param name="position">The alignment position value.</param>
+    /// <returns><c>true</c> if vertically centered; otherwise, <c>false</c>.</returns>
     public static bool IsCenterVertical( int position )
     {
         return ( ( position & TOP ) == 0 ) && ( ( position & BOTTOM ) == 0 );
@@ -111,7 +126,11 @@ public sealed class Alignment
 
     // ========================================================================
 
-    /// <inheritdoc cref="Object.ToString" />
+    /// <summary>
+    /// Returns a string representation of the specified alignment position.
+    /// </summary>
+    /// <param name="position">The alignment position value.</param>
+    /// <returns>A string describing the alignment.</returns>
     public static string ToString( int position )
     {
         var buffer = new StringBuilder( "[" );
@@ -149,3 +168,6 @@ public sealed class Alignment
         return buffer.ToString();
     }
 }
+
+// ============================================================================
+// ============================================================================

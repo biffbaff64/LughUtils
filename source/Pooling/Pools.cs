@@ -50,7 +50,7 @@ public static class Pools
     /// Thrown if newObjectFactory is null when creating a new pool.
     /// </exception>
     public static Pool< T > Get< T >( Pool< T >.NewObjectHandler newObjectFactory,
-                                      int initialCapacity = Pool< T >.DefaultInitialCapacity,
+                                      int initialCapacity = Pool< T >.DEFAULT_INITIAL_CAPACITY,
                                       int max = int.MaxValue ) where T : notnull
     {
         // GetOrAdd is thread-safe for creating or retrieving.

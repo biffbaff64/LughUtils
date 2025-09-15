@@ -25,7 +25,7 @@
 namespace LughUtils.source.Exceptions;
 
 /// <summary>
-/// Exception used for singalling asset load failures.
+/// Exception used for signalling asset load failures.
 /// </summary>
 [PublicAPI]
 public class AssetNotLoadedException : ApplicationException

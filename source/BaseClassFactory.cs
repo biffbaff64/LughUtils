@@ -24,29 +24,32 @@
 
 namespace LughUtils.source;
 
+/// <summary>
+/// Provides a base class for factory implementations that require initialization logic.
+/// </summary>
 [PublicAPI]
 public abstract class BaseClassFactory
 {
     /// <summary>
-    /// Abstract method to be implemented by derived classes
+    /// When implemented in a derived class, performs custom initialization logic.
     /// </summary>
     protected abstract void InitializeInternal();
 
     /// <summary>
-    /// Creates an instance of the specified derived class, initializes it,
-    /// and returns the instance.
+    /// Creates an instance of the specified derived class, calls its initialization logic,
+    /// and returns the initialized instance.
     /// </summary>
     /// <typeparam name="T">
-    /// The type of the derived class to be created. Must inherit from BaseClassFactory
+    /// The type of the derived class to instantiate. Must inherit from <see cref="BaseClassFactory"/>
     /// and have a parameterless constructor.
     /// </typeparam>
-    /// <returns>The initialized instance of the specified derived class.</returns>
-    public static T Create< T >() where T : BaseClassFactory, new()
+    /// <returns>
+    /// An initialized instance of the specified derived class.
+    /// </returns>
+    public static T Create<T>() where T : BaseClassFactory, new()
     {
-        var instance = new T(); // Creates the most derived instance
-
-        instance.InitializeInternal(); // Calls the derived implementation *after* construction
-
+        var instance = new T();
+        instance.InitializeInternal();
         return instance;
     }
 }

@@ -25,7 +25,7 @@
 namespace LughUtils.source;
 
 [PublicAPI]
-public static class TimeUtils
+public static class TimeHelpers
 {
     public const long NANOS_PER_MILLI        = 1_000_000;
     public const long NANOSECONDS_PER_SECOND = 1_000_000_000;
