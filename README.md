@@ -54,46 +54,43 @@ Features
  - <b>Buffer</b>
     - Represents a generic, resizable buffer for unmanaged types, supporting byte-level and
       element-level operations, endianness, and direct/bulk access.
- - BufferUtils
- - ByteOrder
- - BytePointerToString
- - CaseInsensitiveEnumArrayConverterFactory
- - ComparableTimSort
- - DataInput
- - DataOutput
- - DataUtils
- - GCSuppressor
- - HashHelpers
- - IClearablePool
- - IClipboard
- - ICloseable
- - IDrawable
- - IManaged
- - IReadable
- - IResetable
- - IRunnable
- - PerformanceCounter
- - PerformanceCounters
- - PhysicsUtils
- - PropertiesUtils
- - QuadTreeFloat
- - QuickSelect
- - Scaling
- - Selector
- - SingletonBase
- - SortUtils
- - StringUtils
- - SystemArrayUtils
+ - <b>ByteOrder</b>
+   - A typesafe enumeration for byte orders.
+ - <b>CaseInsensitiveEnumArrayConverterFactory</b>
+   - Various util classes for working with enum arrays.
+ - <b>ComparableTimSort</b>
+   - A near duplicate of [TimSort<T>](#TimSort), modified for use with arrays of objects that implement
+     IComparable, instead of using explicit comparators.
+ - <b>DataOutput</b>
+   - Extends BinaryWriter with additional convenience methods.
+ - <b>DataUtils</b>
+   - Various utility functions for working with data.
+ - <b>GCSuppressor</b>
+   - GC Suppression utilities.
+ - <b>HashHelpers</b>
+   - Provides helper methods and constants for efficient hash table index calculations, including
+     support for Fibonacci hashing and bitmask/shift computations for power-of-two table sizes.
+ - <b>PerformanceCounter</b>
+   - Class to keep track of the time and load (percentage of total time) a specific task takes.
+ - <b>PerformanceCounters</b>
+   - Class to keep track of a group of PerformanceCounter instances.
+ - <b>PropertiesUtils</b>
+   - A helper class that allows you to load and store key/value pairs of an Dictionary<TK,TV>
+     with the same line-oriented syntax supported by IPreferences.
+ - <b>QuadTreeFloat</b>
+   - A quad tree that stores a float for each point.
+ - <b>QuickSelect</b>
+   - Implementation of Tony Hoare's quickselect algorithm.
+ - <b>SystemArrayUtils</b>
+   - Utility methods for working with System.Array.
  - <b>TimeUtils</b>
    - Helper functions for working with System.DateTime and System.TimeSpan.
- - TimSort
+ - <b>TimSort</b>
+   - A stable, adaptive, iterative mergesort that requires far fewer than n lg(n) comparisons
+     when running on partially sorted arrays, while offering performance comparable to a
+     traditional mergesort when run on random arrays.
 
  - <b>Collections</b>
-   - <b>ArrayList</b>
-     - A resizable, ordered or unordered array of objects. If unordered, this class avoids
-     - a memory copy when removing elements (the last element is moved to the removed
-     - element's position).
-   - ArrayListEnumerator
    - ByteArray
    - DelayedRemovalList
    - DictionaryExtensions
@@ -104,7 +101,7 @@ Features
    - OrderedMap
    - PredicateIterable
    - PredicateIterator
-   - SnapshotArrayList
+   - SnapshotArrayList - TODO
 
  - <b>Exceptions</b>
    - <b>AssetNotLoadedException</b>

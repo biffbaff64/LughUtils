@@ -39,6 +39,7 @@ namespace LughUtils.source.Collections;
 [PublicAPI]
 public class SnapshotArrayList< T > : ArrayList< T >, IEnumerable< T >
 {
+    private T[]? _items;
     private T[]? _recycled;
     private T[]? _snapshot;
     private int  _snapshotCount;
@@ -58,20 +59,13 @@ public class SnapshotArrayList< T > : ArrayList< T >, IEnumerable< T >
     /// <summary>
     /// Creates a new SnapshotArray from the supplied <see cref="ArrayList{T}" />
     /// </summary>
-    public SnapshotArrayList( ArrayList< T > arrayList )
+    public SnapshotArrayList( T[] array, bool ordered = true )
+        : this( ordered, array, 0, array.Length )
     {
-        ArgumentNullException.ThrowIfNull( arrayList );
-        ArgumentNullException.ThrowIfNull( arrayList.Items );
-
-        Ordered = arrayList.Ordered;
-        Count   = arrayList.Count;
-        Items   = new T[ Count ];
-
-        Array.Copy( arrayList.Items, 0, Items, 0, Count );
     }
 
     /// <summary>
-    /// Creates a new SnapshotArray, with <see cref="ArrayList{T}.Ordered" /> and
+    /// Creates a new SnapshotArray, with <see cref="Ordered" /> and
     /// array capacity set to the supplied values.
     /// </summary>
     /// <param name="ordered"> Default value is TRUE. </param>
