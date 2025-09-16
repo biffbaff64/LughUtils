@@ -24,7 +24,7 @@
 
 namespace LughUtils.source;
 
-using Array = Array;
+using Array = System.Array;
 
 [PublicAPI]
 public static class SystemArrayUtils

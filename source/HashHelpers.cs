@@ -24,6 +24,11 @@
 
 namespace LughUtils.source;
 
+/// <summary>
+/// Provides helper methods and constants for efficient hash table index
+/// calculations, including support for Fibonacci hashing and bitmask/shift
+/// computations for power-of-two table sizes.
+/// </summary>
 [PublicAPI]
 public class HashHelpers
 {
