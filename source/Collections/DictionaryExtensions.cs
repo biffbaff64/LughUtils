@@ -24,6 +24,9 @@
 
 namespace LughUtils.source.Collections;
 
+/// <summary>
+/// A collection of extension methods for <see cref="Dictionary{TKey,TValue}" />.
+/// </summary>
 [PublicAPI]
 public static class DictionaryExtension
 {

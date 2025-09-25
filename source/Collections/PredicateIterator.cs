@@ -24,15 +24,44 @@
 
 namespace LughUtils.source.Collections;
 
+/// <summary>
+/// An iterator that enumerates elements of type <typeparamref name="T"/> from a collection,
+/// returning only those that satisfy a specified predicate. Supports peeking at the next
+/// valid element, resetting, and removal. Implements <see cref="IEnumerator{T}"/>.
+/// </summary>
+/// <typeparam name="T">The type of elements to iterate over.</typeparam>
 [PublicAPI]
-public class PredicateIterator< T > : IEnumerator< T >, IDisposable
+public class PredicateIterator<T> : IEnumerator<T>, IDisposable
 {
-    public IEnumerator< T? > Enumerator { get; set; }
-    public IPredicate< T >   Predicate  { get; set; }
-    public bool              End        { get; set; }
-    public bool              Peeked     { get; set; }
-    public T?                NextItem   { get; set; }
-    public T                 Current    { get; }
+    /// <summary>
+    /// The underlying enumerator for the collection.
+    /// </summary>
+    public IEnumerator<T?> Enumerator { get; set; }
+
+    /// <summary>
+    /// The predicate used to filter elements.
+    /// </summary>
+    public IPredicate<T> Predicate { get; set; }
+
+    /// <summary>
+    /// Indicates whether the end of the collection has been reached.
+    /// </summary>
+    public bool End { get; set; }
+
+    /// <summary>
+    /// Indicates whether the next item has been peeked.
+    /// </summary>
+    public bool Peeked { get; set; }
+
+    /// <summary>
+    /// Stores the next item that matches the predicate.
+    /// </summary>
+    public T? NextItem { get; set; }
+
+    /// <summary>
+    /// The current item in the iteration.
+    /// </summary>
+    public T Current { get; }
 
     // ========================================================================
 
@@ -65,43 +94,37 @@ public class PredicateIterator< T > : IEnumerator< T >, IDisposable
     object? IEnumerator.Current => Current;
 
     /// <summary>
+    /// Advances the iterator to the next element that satisfies the predicate.
     /// </summary>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <returns>True if a valid element is found; otherwise, false.</returns>
     public virtual bool MoveNext()
     {
         throw new NotImplementedException();
     }
 
     /// <summary>
+    /// Resets the iterator to its initial state.
     /// </summary>
-    /// <exception cref="NotImplementedException"></exception>
     public virtual void Reset()
     {
         throw new NotImplementedException();
     }
 
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        Remove();
-
-        GC.SuppressFinalize( this );
-    }
-
     /// <summary>
+    /// Sets the iterator to use a new enumerable and predicate.
     /// </summary>
-    /// <param name="enumerable"></param>
-    /// <param name="predicate"></param>
+    /// <param name="enumerable"> The enumerable to iterate over. </param>
+    /// <param name="predicate"> The predicate to filter elements. </param>
     public void Set( IEnumerable< T? > enumerable, IPredicate< T > predicate )
     {
         Set( enumerable.GetEnumerator(), predicate );
     }
 
     /// <summary>
+    /// Sets the iterator to use a new enumerator and predicate.
     /// </summary>
-    /// <param name="iterator"></param>
-    /// <param name="predicate"></param>
+    /// <param name="iterator"> The enumerator to iterate over. </param>
+    /// <param name="predicate"> The predicate to filter elements. </param>
     public void Set( IEnumerator< T? > iterator, IPredicate< T > predicate )
     {
         Enumerator = iterator;
@@ -112,8 +135,9 @@ public class PredicateIterator< T > : IEnumerator< T >, IDisposable
     }
 
     /// <summary>
+    /// Determines whether there is a next element that satisfies the predicate.
     /// </summary>
-    /// <returns></returns>
+    /// <returns> True if there is a next valid element; otherwise, false. </returns>
     public bool HasNext()
     {
         if ( End )
@@ -146,8 +170,9 @@ public class PredicateIterator< T > : IEnumerator< T >, IDisposable
     }
 
     /// <summary>
+    /// Returns the next element that satisfies the predicate.
     /// </summary>
-    /// <returns></returns>
+    /// <returns> The next valid element, or default if none exists. </returns>
     public T? Next()
     {
         if ( ( NextItem == null ) && !HasNext() )
@@ -163,15 +188,24 @@ public class PredicateIterator< T > : IEnumerator< T >, IDisposable
     }
 
     /// <summary>
+    /// Removes the current element from the underlying collection.
     /// </summary>
-    /// <exception cref="GdxRuntimeException"></exception>
+    /// <exception cref="GdxRuntimeException"> Thrown if called between HasNext() and Next(). </exception>
     public void Remove()
     {
         if ( Peeked )
         {
-            throw new GdxRuntimeException( "Cannot remove between a call to hasNext() and next()." );
+            throw new GdxRuntimeException( "Cannot remove between a call to HasNext() and Next()." );
         }
 
         Enumerator.Dispose();
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Remove();
+
+        GC.SuppressFinalize( this );
     }
 }

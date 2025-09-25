@@ -62,7 +62,9 @@ public class OrderedMap< TK, TV > : ObjectMap< TK, TV >
     // ========================================================================
 
     /// <summary>
-    /// Creates a new map with an initial capacity of 51 and a load factor of 0.8.
+    /// Creates a new map with default values for initial capacity and load factor.
+    /// These values are inherited from <see cref="ObjectMap{T,V}"/>.
+    /// The default initial capacity is 51 and the default load factor is 0.8
     /// </summary>
     public OrderedMap()
     {
@@ -70,7 +72,9 @@ public class OrderedMap< TK, TV > : ObjectMap< TK, TV >
     }
 
     /// <summary>
-    /// Creates a new map with a load factor of 0.8.
+    /// Creates a new map with a default load factor, and an initial capacity sufficient to hold
+    /// initialCapacity items. This map will hold initialCapacity items before growing the backing
+    /// table.
     /// </summary>
     /// <param name="initialCapacity">
     /// If not a power of two, it is increased to the next nearest power of two.
