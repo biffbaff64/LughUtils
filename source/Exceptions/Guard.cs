@@ -88,7 +88,7 @@ public class Guard
     }
 
     /// <summary>
-    /// Writes a <see cref="Logger.Warning"/> message if obj is null.
+    /// Writes a <see cref="Logger.Error"/> message if obj is null.
     /// Provides a clear error message with the argumentName.
     /// <para>
     /// Note that using this method does not suppress subsequent nullability
@@ -101,12 +101,12 @@ public class Guard
     {
         if ( obj == null )
         {
-            Logger.Warning( $"WARNING: Object {argumentName} cannot be null." );
+            Logger.Error( $"WARNING: Object {argumentName} cannot be null." );
         }
     }
 
     /// <summary>
-    /// Writes a <see cref="Logger.Warning"/> message if any of the objects in the
+    /// Writes a <see cref="Logger.Error"/> message if any of the objects in the
     /// 'objects[]' array is null. Provides a clear error message with the argumentName.
     /// <para>
     /// Note that using this method does not suppress subsequent nullability
@@ -121,7 +121,7 @@ public class Guard
         {
             if ( obj == null )
             {
-                Logger.Warning( $"WARNING: Object {obj?.GetType().FullName} cannot be null." );
+                Logger.Error( $"WARNING: Object {obj?.GetType().FullName} cannot be null." );
             }
         }
     }

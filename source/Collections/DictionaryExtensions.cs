@@ -106,9 +106,11 @@ public static class DictionaryExtension
         self.Add( key, value );
     }
 
+    /// <summary>
+    /// This method is in development, DO NOT USE.
+    /// </summary>
     public static void Put< T, T1 >( this Dictionary< object, object > self, ulong key, T1 goldenRatio )
     {
-        throw new NotImplementedException();
     }
 
     /// <summary>

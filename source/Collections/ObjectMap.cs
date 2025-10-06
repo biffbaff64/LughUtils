@@ -31,13 +31,13 @@ namespace LughUtils.source.Collections;
 /// <para>
 /// This class performs fast contains and remove (typically O(1), worst case O(n) but
 /// that is rare in practice). Add may be slightly slower, depending on hash collisions.
-/// Hashcodes are rehashed to reduce collisions and the need to resize. Load factors
+/// Hash codes are rehashed to reduce collisions and the need to resize. Load factors
 /// greater than 0.91 greatly increase the chances to resize to the next higher POT size.
 /// Unordered sets and maps are not designed to provide especially fast iteration.
 /// </para>
 /// <para>
 /// This implementation uses linear probing with the backward shift algorithm for removal.
-/// Hashcodes are rehashed using Fibonacci hashing, instead of the more common power-of-two
+/// Hash codes are rehashed using Fibonacci hashing, instead of the more common power-of-two
 /// mask, to better distribute poor hashCodes (see Malte Skarupke's blog post). Linear
 /// probing continues to work even when all hashCodes collide, just more slowly.
 /// </para>
@@ -45,30 +45,6 @@ namespace LughUtils.source.Collections;
 [PublicAPI]
 public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
 {
-    /// <summary>
-    /// Used by <see cref="GetHashIndex" /> to bit shift the upper bits of a <b>long</b>
-    /// into a usable range (&gt;= 0 and &lt;= <see cref="Mask" />).
-    /// <para>
-    /// The shift can be negative, which is convenient to match the number of bits in
-    /// mask: if mask is a 7-bit number, a shift of -7 shifts the upper 7 bits into the
-    /// lowest 7 positions. This class sets the shift &gt; 32 and &lt; 64, which if used
-    /// with an int will still move the upper bits of an int to the lower bits.
-    /// </para>
-    /// <para>
-    /// <see cref="Mask" /> can also be used to mask the low bits of a number, which may
-    /// be faster for some hashcodes if <see cref="GetHashIndex" /> is overridden.
-    /// </para>
-    /// </summary>
-    protected int Shift { get; set; }
-
-    /// <summary>
-    /// A bitmask used to confine hashcodes to the size of the table. Must be all
-    /// 1 bits in its low positions, ie a power of two minus 1.
-    /// If <see cref="GetHashIndex" /> is overriden, this can be used instead of <see cref="Shift" />
-    /// to isolate usable bits of a hash.
-    /// </summary>
-    protected int Mask { get; set; }
-
     /// <summary>
     /// Returns the size of this ObjectMap
     /// </summary>
@@ -82,22 +58,59 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// </summary>
     public bool AllocateIterators { get; set; }
 
+    /// <summary>
+    /// Returns the Values table for this ObjectMap.
+    /// </summary>
+    public TV?[] Values => ValueTable;
+
+    /// <summary>
+    /// Returns the Keys table for this ObjectMap.
+    /// </summary>
+    public TK?[] Keys => KeyTable;
+
+    // ========================================================================
+
+    /// <summary>
+    /// Used by <see cref="GetHashIndex" /> to bit shift the upper bits of a <b>long</b>
+    /// into a usable range (&gt;= 0 and &lt;= <see cref="Mask" />).
+    /// <para>
+    /// The shift can be negative, which is convenient to match the number of bits in
+    /// mask: if mask is a 7-bit number, a shift of -7 shifts the upper 7 bits into the
+    /// lowest 7 positions. This class sets the shift &gt; 32 and &lt; 64, which if used
+    /// with an int will still move the upper bits of an int to the lower bits.
+    /// </para>
+    /// <para>
+    /// <see cref="Mask" /> can also be used to mask the low bits of a number, which may
+    /// be faster for some hash codes if <see cref="GetHashIndex" /> is overridden.
+    /// </para>
+    /// </summary>
+    protected int Shift { get; set; }
+
+    /// <summary>
+    /// A bitmask used to confine hash codes to the size of the table. Must be all
+    /// 1 bits in its low positions, i.e. a power of two minus 1.
+    /// If <see cref="GetHashIndex" /> is overriden, this can be used instead of <see cref="Shift" />
+    /// to isolate usable bits of a hash.
+    /// </summary>
+    protected int Mask { get; set; }
+
     // ========================================================================
 
     protected const int   DEFAULT_CAPACITY    = 51;
     protected const float DEFAULT_LOAD_FACTOR = 0.8f;
 
     protected readonly float LoadFactor;
-    protected          TK?[] KeyTable;
-    protected          int   Threshold;
-    protected          TV?[] ValueTable;
 
-    protected Entries? Entries1;
-    protected Entries? Entries2;
-    protected Keys?    Keys1;
-    protected Keys?    Keys2;
-    protected Values?  Values1;
-    protected Values?  Values2;
+    protected int   Threshold;
+    protected TK?[] KeyTable;
+    protected TV?[] ValueTable;
+
+    protected EntriesIterator? Entries1;
+    protected EntriesIterator? Entries2;
+    protected KeysIterator?    Keys1;
+    protected KeysIterator?    Keys2;
+    protected ValuesIterator?  Values1;
+    protected ValuesIterator?  Values2;
 
     // ========================================================================
 
@@ -154,11 +167,9 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// Copy Constructor
     /// </summary>
     /// <param name="map">The ObjectMap to copy.</param>
-    /// <exception cref="ArgumentException"> Thrown if map is null. </exception>
+    /// <exception cref="ArgumentException"> Thrown if 'map' is null. </exception>
     protected ObjectMap( ObjectMap< TK, TV > map )
     {
-        ArgumentNullException.ThrowIfNull( map );
-
         LoadFactor = map.LoadFactor;
 
         var tableSize = TableSize( ( int )( map.KeyTable.Length * map.LoadFactor ),
@@ -240,13 +251,37 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     }
 
     /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    /// <exception cref="KeyNotFoundException"></exception>
+    public TV? LocateValue( TK key )
+    {
+        // 1. Use the existing helper to find the index of the key.
+        var index = LocateKey( key );
+
+        // 2. If the key is found (index is not -1), return the value from the parallel array.
+        return index >= 0
+            ?
+
+            // ValueTable[index] contains the value associated with the key at that index.
+            ValueTable[ index ]
+            : throw
+
+                // 3. If the key is not found, throw the standard Dictionary exception.
+                // This is the common dictionary behavior when a lookup fails.
+                new KeyNotFoundException( $"The key '{key}' was not found in the ObjectMap." );
+    }
+
+    /// <summary>
     /// Adds a new key-value pair to the map.
     /// Throws an exception if the key already exists.
     /// </summary>
     /// <param name="key">The key to add.</param>
     /// <param name="value">The value to add.</param>
     /// <exception cref="ArgumentException">Thrown if the key already exists in the map.</exception>
-    public void Add( TK key, TV? value )
+    public void AddPair( TK key, TV? value )
     {
         if ( ContainsKey( key ) )
         {
@@ -256,6 +291,25 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
         Put( key, value );
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public bool TryAdd( TK key, TV? value )
+    {
+        if ( ContainsKey( key ) )
+        {
+            // Key already exists, return false to indicate failure.
+            return false;
+        }
+        
+        AddPair( key, value );
+
+        return true;
+    }
+    
     /// <summary>
     /// Replaces the value associated with the specified key, and returns the old value.
     /// If the key is not found, the value is added at the end of the map and null is returned.
@@ -286,7 +340,7 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
             Resize( KeyTable.Length << 1 );
         }
 
-        return default( TV? );
+        return default( TV );
     }
 
     /// <summary>
@@ -333,14 +387,14 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// using the <see cref="LocateKey" /> method. If the key is found, the associated
     /// value is returned; otherwise, <c>null</c> is returned.
     /// </remarks>
-    /// <typeparam name="TT">The type of the key to look up.</typeparam>
+    /// <typeparam name="T">The type of the key to look up.</typeparam>
     /// <typeparam name="TK">The type constraint for the key type.</typeparam>
     /// <typeparam name="TV">The type of the value to retrieve.</typeparam>
-    public TV? Get< TT >( TT key ) where TT : TK
+    public TV? Get< T >( T key ) where T : TK
     {
-        var i = LocateKey( key );
+        Guard.ThrowIfNull( ValueTable );
 
-        return i < 0 ? default( TV? ) : ValueTable[ i ];
+        return ValueTable[ LocateKey( key ) ];
     }
 
     /// <summary>
@@ -362,11 +416,86 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// </remarks>
     /// <typeparam name="TK">The type of the keys in the collection.</typeparam>
     /// <typeparam name="TV">The type of the values in the collection.</typeparam>
-    public TV? Get( TK key, TV? defaultValue )
+    public TV? Get( TK key, TV defaultValue )
     {
         var i = LocateKey( key );
 
         return i < 0 ? defaultValue : ValueTable[ i ];
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public bool TryGetValue( TK key, [MaybeNullWhen( false )] out TV value )
+    {
+        var index = LocateKey( key );
+
+        if ( index >= 0 )
+        {
+            // KEY FOUND: Return true, so 'value' must be non-null.
+
+            // Use the Null-Forgiving Operator '!' if necessary to assert non-nullness, 
+            // especially if your ValueTable stores nullable TV values.
+            value = ValueTable[ index ]!;
+
+            return true;
+        }
+
+        // Key Not Found:
+
+        // a. Assign the default value for TV (e.g. null, 0) to the out parameter.
+        // This is required for all out parameters, regardless of success.
+        value = default( TV );
+
+        // b. Return false to indicate failure.
+        return false;
+    }
+
+    /// <summary>
+    /// Get: Retrieves the value associated with the specified key from the collection.
+    /// <br/>
+    /// Set: Adds a new key-value pair to the map.
+    /// </summary>
+    /// <param name="key">The key to look up.</param>
+    /// <exception cref="KeyNotFoundException"> Thrown if the key is not found. </exception>
+    public TV? this[ TK key ]
+    {
+        get
+        {
+            // 1. Search for the key's index
+            var index = LocateKey( key );
+
+            // 2. If the key is found, return the corresponding value
+            return index >= 0
+                ?
+
+                // Use ValueTable with the found index
+                ValueTable[ index ]
+                : throw
+
+                    // 3. If the key is NOT found, throw the standard Dictionary exception
+                    new KeyNotFoundException();
+        }
+        set
+        {
+            // 1. Search for the key's index
+            var index = LocateKey( key );
+
+            if ( index >= 0 )
+            {
+                // The key exists: UPDATE the value at the found index
+                ValueTable[ index ] = value;
+            }
+            else
+            {
+                // The key doesn't exist: ADD the new key/value pair.
+                // This requires a helper method (e.g. AddPair) to manage array growth and assignment.
+                AddPair( key, value );
+            }
+        }
     }
 
     /// <summary>
@@ -516,7 +645,7 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
             }
         }
 
-        return default( TK? );
+        return default( TK )!;
     }
 
     /// <summary>
@@ -602,7 +731,7 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
 
                 if ( value == null )
                 {
-                    if ( other.Get( key, ( TV? )_dummy ) != null )
+                    if ( other.Get( key, ( TV )_dummy ) != null )
                     {
                         return false;
                     }
@@ -699,15 +828,15 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
 
         if ( i < 0 )
         {
-            return default( TV? );
+            return default( TV );
         }
 
         var oldValue = ValueTable[ i ];
         var next     = ( i + 1 ) & Mask;
 
-        while ( KeyTable[ next ] is { } lkey )
+        while ( KeyTable[ next ] is { } nextKey )
         {
-            var placement = GetHashIndex( lkey );
+            var placement = GetHashIndex( nextKey );
 
             if ( ( ( next - placement ) & Mask ) > ( ( i - placement ) & Mask ) )
             {
@@ -732,22 +861,22 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// Returns an iterator for the entries in the map. Remove is supported.
     /// <para>
     /// If Collections.allocateIterators is false, the same iterator instance
-    /// is returned each time this method is called. Use the ObjectMap.Entries
+    /// is returned each time this method is called. Use the ObjectMap.EntriesIterator
     /// constructor for nested or multithreaded iteration.
     /// </para>
     /// </summary>
     /// <returns></returns>
-    public virtual Entries GetEntries()
+    public virtual EntriesIterator GetEntries()
     {
         if ( AllocateIterators )
         {
-            return new Entries( this );
+            return new EntriesIterator( this );
         }
 
         if ( Entries1 == null )
         {
-            Entries1 = new Entries( this );
-            Entries2 = new Entries( this );
+            Entries1 = new EntriesIterator( this );
+            Entries2 = new EntriesIterator( this );
         }
 
         Guard.ThrowIfNull( Entries2 );
@@ -772,22 +901,22 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// Returns an iterator for the values in the map. Remove is supported.
     /// <para>
     /// If Collections.allocateIterators is false, the same iterator instance is
-    /// returned each time this method is called. Use the ObjectMap.Values
+    /// returned each time this method is called. Use the ObjectMap.ValuesIterator
     /// constructor for nested or multithreaded iteration.
     /// </para>
     /// </summary>
     /// <returns></returns>
-    public virtual Values GetValues()
+    public virtual ValuesIterator GetValues()
     {
         if ( AllocateIterators )
         {
-            return new Values( this );
+            return new ValuesIterator( this );
         }
 
         if ( Values1 == null )
         {
-            Values1 = new Values( this );
-            Values2 = new Values( this );
+            Values1 = new ValuesIterator( this );
+            Values2 = new ValuesIterator( this );
         }
 
         Guard.ThrowIfNull( Values1 );
@@ -813,22 +942,22 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// Returns an iterator for the keys in the map. Remove is supported.
     /// <para>
     /// If Collections.allocateIterators is false, the same iterator instance
-    /// is returned each time this method is called. Use the ObjectMap.Keys
+    /// is returned each time this method is called. Use the ObjectMap.KeysIterator
     /// constructor for nested or multithreaded iteration.
     /// </para>
     /// </summary>
     /// <returns></returns>
-    public virtual Keys GetKeys()
+    public virtual KeysIterator GetKeys()
     {
         if ( AllocateIterators )
         {
-            return new Keys( this );
+            return new KeysIterator( this );
         }
 
         if ( Keys1 == null )
         {
-            Keys1 = new Keys( this );
-            Keys2 = new Keys( this );
+            Keys1 = new KeysIterator( this );
+            Keys2 = new KeysIterator( this );
         }
 
         Guard.ThrowIfNull( Keys1 );
@@ -850,7 +979,7 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
         return Keys2;
     }
 
-    protected Entries GetIterator()
+    protected EntriesIterator GetIterator()
     {
         return GetEntries();
     }
@@ -1143,8 +1272,8 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
                 next = ( next + 1 ) & mask;
             }
 
-            Map.KeyTable[ i ]   = default( TK? )!;
-            Map.ValueTable[ i ] = default( TV? );
+            Map.KeyTable[ i ]   = default( TK );
+            Map.ValueTable[ i ] = default( TV );
 
             Map.Size--;
 
@@ -1164,15 +1293,15 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// An iterator for the entries in an ObjectMap.
     /// </summary>
     [PublicAPI]
-    public class Entries : MapIterator
+    public class EntriesIterator : MapIterator
     {
         protected readonly Entry Entry = new();
 
         /// <summary>
-        /// Initializes a new instance of the Entries class for the specified map.
+        /// Initializes a new instance of the EntriesIterator class for the specified map.
         /// </summary>
         /// <param name="map">The ObjectMap to iterate over.</param>
-        public Entries( ObjectMap< TK, TV > map ) : base( map )
+        public EntriesIterator( ObjectMap< TK, TV > map ) : base( map )
         {
         }
 
@@ -1207,7 +1336,7 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
         /// <summary>
         /// Returns this instance as its iterator.
         /// </summary>
-        public Entries Iterator()
+        public EntriesIterator Iterator()
         {
             return this;
         }
@@ -1220,13 +1349,13 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// Represents an iterator for the values of an ObjectMap.
     /// </summary>
     [PublicAPI]
-    public class Values : MapIterator
+    public class ValuesIterator : MapIterator
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Values" /> class.
+        /// Initializes a new instance of the <see cref="ValuesIterator" /> class.
         /// </summary>
         /// <param name="map">The map to iterate over.</param>
-        public Values( ObjectMap< TK, TV > map )
+        public ValuesIterator( ObjectMap< TK, TV > map )
             : base( map )
         {
         }
@@ -1262,7 +1391,7 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
         /// <summary>
         /// Returns this instance as its iterator.
         /// </summary>
-        public Values Iterator()
+        public ValuesIterator Iterator()
         {
             return this;
         }
@@ -1296,13 +1425,13 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// Represents an iterator for the keys of an ObjectMap.
     /// </summary>
     [PublicAPI]
-    public class Keys : MapIterator
+    public class KeysIterator : MapIterator
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Keys" /> class.
+        /// Initializes a new instance of the <see cref="KeysIterator" /> class.
         /// </summary>
         /// <param name="map">The map to iterate over.</param>
-        public Keys( ObjectMap< TK, TV > map )
+        public KeysIterator( ObjectMap< TK, TV > map )
             : base( map )
         {
         }
@@ -1338,7 +1467,7 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
         /// <summary>
         /// Returns this instance as its iterator.
         /// </summary>
-        public virtual Keys Iterator()
+        public virtual KeysIterator Iterator()
         {
             return this;
         }

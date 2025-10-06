@@ -94,7 +94,7 @@ public class Pool< T > where T : notnull
                 // Pool is at max capacity and no free objects.
                 // Depending on policy: throw, return null, or block.
                 // For now, returning null.
-                Logger.Warning( $"Pool for type {typeof( T ).Name} exhausted. Cannot obtain object." );
+                Logger.Error( $"Pool for type {typeof( T ).Name} exhausted. Cannot obtain object." );
 
                 return default( T ); // Returning default(T) (null for reference types)
             }
@@ -106,14 +106,14 @@ public class Pool< T > where T : notnull
                 if ( obj == null )
                 {
                     // Factory itself returned null (e.g., due to creation failure)
-                    Logger.Warning( $"NewObjectHandler for type {typeof( T ).Name} returned null." );
+                    Logger.Error( $"NewObjectHandler for type {typeof( T ).Name} returned null." );
 
                     return default( T );
                 }
             }
             catch ( Exception ex )
             {
-                Logger.Warning( $"Failed to create new object for type {typeof( T ).Name}: {ex.Message}" );
+                Logger.Error( $"Failed to create new object for type {typeof( T ).Name}: {ex.Message}" );
 
                 return default( T );
             }
@@ -124,7 +124,7 @@ public class Pool< T > where T : notnull
         {
             // This should ideally not happen if pool is correctly managed, but indicates an issue.
             // Means an object is being obtained but already marked as active.
-            Logger.Warning( $"Obtained object {obj.GetType().Name} was already marked as " +
+            Logger.Error( $"Obtained object {obj.GetType().Name} was already marked as " +
                             $"active. Potential pool misuse." );
 
             // We might want to re-add to free and try again, or throw. For now, proceeding.
@@ -159,7 +159,7 @@ public class Pool< T > where T : notnull
 
                 if ( obj == null )
                 {
-                    Logger.Warning( $"NewObjectHandler for type {typeof( T ).Name} returned null during Fill." );
+                    Logger.Error( $"NewObjectHandler for type {typeof( T ).Name} returned null during Fill." );
 
                     break; // Stop filling if factory returns null
                 }
@@ -169,7 +169,7 @@ public class Pool< T > where T : notnull
             }
             catch ( Exception ex )
             {
-                Logger.Warning( $"Failed to create object during Fill for " +
+                Logger.Error( $"Failed to create object during Fill for " +
                                 $"type {typeof( T ).Name}: {ex.Message}" );
 
                 break; // Stop filling if creation fails
@@ -193,7 +193,7 @@ public class Pool< T > where T : notnull
         // Crucial: Check if the object was actually obtained from this pool and is not being double-freed.
         if ( !_activeObjects.TryRemove( obj, out var _ ) ) // For ConcurrentDictionary
         {
-            Logger.Warning( $"Attempted to free object {obj.GetType().Name} that was " +
+            Logger.Error( $"Attempted to free object {obj.GetType().Name} that was " +
                             $"not obtained from this pool or was already freed." );
 
             // Depending on strictness, you might throw an exception here:

@@ -148,7 +148,7 @@ public static class Logger
     /// <param name="callerMethod"> The Method this message was sent from. </param>
     /// <param name="callerLine"> The Line this message was sent from. </param>
     [Conditional( "DEBUG" )]
-    public static void Warning( string message,
+    public static void Error( string message,
                                 [CallerFilePath] string callerFilePath = "",
                                 [CallerMemberName] string callerMethod = "",
                                 [CallerLineNumber] int callerLine = 0 )

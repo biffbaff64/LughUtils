@@ -25,18 +25,18 @@
 namespace LughUtils.source.Collections;
 
 /// <summary>
-/// An <see cref="ObjectMap{TK,TV}"/> that also stores Keys in an <see cref="List{T}"/> using the
-/// insertion order. Null Keys are not allowed. No allocation is done except when growing the
+/// An <see cref="ObjectMap{TK,TV}"/> that also stores KeysIterator in an <see cref="List{T}"/> using the
+/// insertion order. Null KeysIterator are not allowed. No allocation is done except when growing the
 /// table size.
 /// <p>
-/// Iteration over the <see cref="ObjectMap{TK,TV}.Entries"/>, <see cref="GetKeys"/>, and <see cref="ObjectMap{TK,TV}.Values"/> is
-/// ordered and faster than an unordered map. Keys can also be accessed and the order changed using
+/// Iteration over the <see cref="ObjectMap{TK,TV}.EntriesIterator"/>, <see cref="GetKeys"/>, and <see cref="ObjectMap{TK,TV}.ValuesIterator"/> is
+/// ordered and faster than an unordered map. KeysIterator can also be accessed and the order changed using
 /// <see cref="OrderedKeys()"/>. There is some additional overhead for put and remove operations.
 /// </p>
 /// <p>
 /// This class performs fast contains (typically O(1), worst case O(n) but that is rare in practice).
 /// Remove is somewhat slower due to <see cref="OrderedKeys()"/>. Add may be slightly slower, depending
-/// on hash collisions. Hashcodes are rehashed to reduce collisions and the need to resize. Load
+/// on hash collisions. Hash codes are rehashed to reduce collisions and the need to resize. Load
 /// factors greater than 0.91 greatly increase the chances to resize to the next higher POT size.
 /// </p>
 /// <p>
@@ -44,7 +44,7 @@ namespace LughUtils.source.Collections;
 /// with OrderedSet and OrderedMap.
 /// </p>
 /// <p>
-/// This implementation uses linear probing with the backward shift algorithm for removal. Hashcodes
+/// This implementation uses linear probing with the backward shift algorithm for removal. Hash codes
 /// are rehashed using Fibonacci hashing, instead of the more common power-of-two mask, to better
 /// distribute poor hashCodes . Linear probing continues to work even when all hashCodes collide,
 /// just more slowly.
@@ -259,7 +259,7 @@ public class OrderedMap< TK, TV > : ObjectMap< TK, TV >
         return _keys;
     }
 
-    public Entries Iterator()
+    public EntriesIterator Iterator()
     {
         return GetEntries();
     }
@@ -272,7 +272,7 @@ public class OrderedMap< TK, TV > : ObjectMap< TK, TV >
     /// for nested or multithreaded iteration.
     /// </para>
     /// </summary>
-    public override Entries GetEntries()
+    public override EntriesIterator GetEntries()
     {
         if ( AllocateIterators )
         {
@@ -311,7 +311,7 @@ public class OrderedMap< TK, TV > : ObjectMap< TK, TV >
     /// for nested or multithreaded iteration.
     /// </para>
     /// </summary>
-    public override Values GetValues()
+    public override ValuesIterator GetValues()
     {
         if ( AllocateIterators )
         {
@@ -350,7 +350,7 @@ public class OrderedMap< TK, TV > : ObjectMap< TK, TV >
     /// for nested or multithreaded iteration.
     /// </para>
     /// </summary>
-    public override Keys GetKeys()
+    public override KeysIterator GetKeys()
     {
         if ( AllocateIterators )
         {
@@ -427,7 +427,7 @@ public class OrderedMap< TK, TV > : ObjectMap< TK, TV >
     // ========================================================================
 
     [PublicAPI]
-    public class OrderedMapEntries : Entries
+    public class OrderedMapEntries : EntriesIterator
     {
         private List< TK > _keys;
 
@@ -488,7 +488,7 @@ public class OrderedMap< TK, TV > : ObjectMap< TK, TV >
     // ========================================================================
 
     [PublicAPI]
-    public class OrderedMapKeys : Keys
+    public class OrderedMapKeys : KeysIterator
     {
         private List< TK > _keys;
 
@@ -564,7 +564,7 @@ public class OrderedMap< TK, TV > : ObjectMap< TK, TV >
     // ========================================================================
 
     [PublicAPI]
-    public class OrderedMapValues : Values
+    public class OrderedMapValues : ValuesIterator
     {
         private List< TK > _keys;
 
