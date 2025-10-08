@@ -46,7 +46,7 @@ namespace LughUtils.source.Collections;
 public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
 {
     /// <summary>
-    /// Returns the size of this ObjectMap
+    /// Returns the number of key-value pairs in the map.
     /// </summary>
     public int Size { get; set; }
 
@@ -275,23 +275,6 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     }
 
     /// <summary>
-    /// Adds a new key-value pair to the map.
-    /// Throws an exception if the key already exists.
-    /// </summary>
-    /// <param name="key">The key to add.</param>
-    /// <param name="value">The value to add.</param>
-    /// <exception cref="ArgumentException">Thrown if the key already exists in the map.</exception>
-    public void AddPair( TK key, TV? value )
-    {
-        if ( ContainsKey( key ) )
-        {
-            throw new ArgumentException( $"An element with the same key already exists: {key}" );
-        }
-
-        Put( key, value );
-    }
-
-    /// <summary>
     /// 
     /// </summary>
     /// <param name="key"></param>
@@ -308,6 +291,23 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
         AddPair( key, value );
 
         return true;
+    }
+
+    /// <summary>
+    /// Adds a new key-value pair to the map.
+    /// Throws an exception if the key already exists.
+    /// </summary>
+    /// <param name="key">The key to add.</param>
+    /// <param name="value">The value to add.</param>
+    /// <exception cref="ArgumentException">Thrown if the key already exists in the map.</exception>
+    public void AddPair( TK key, TV? value )
+    {
+        if ( ContainsKey( key ) )
+        {
+            throw new ArgumentException( $"An element with the same key already exists: {key}" );
+        }
+
+        Put( key, value );
     }
     
     /// <summary>
@@ -499,22 +499,22 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     }
 
     /// <summary>
+    /// Returns the number of key-value pairs in the map. Provided for compatibility with
+    /// <see cref="IDictionary{TKey,TValue}" />.
+    /// </summary>
+    public virtual int Count => Size;
+    
+    /// <summary>
     /// Helper method.
     /// Returns TRUE if Size is greater than zero.
     /// </summary>
-    public virtual bool NotEmpty()
-    {
-        return Size > 0;
-    }
+    public virtual bool NotEmpty() => Size > 0;
 
     /// <summary>
     /// Helper method.
     /// Returns TRUE if Size is zero.
     /// </summary>
-    public virtual bool IsEmpty()
-    {
-        return Size == 0;
-    }
+    public virtual bool IsEmpty() => Size == 0;
 
     /// <summary>
     /// Shrinks the map to the specified maximum capacity.

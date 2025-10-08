@@ -13,11 +13,11 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageTags>C#, Utilities, Library</PackageTags>
-        <Version>0.0.4</Version>
+        <Version>0.0.5</Version>
         <Authors>Richard Ikin</Authors>
         <AssemblyVersion>0.0.0.1</AssemblyVersion>
         <FileVersion>0.0.0.1</FileVersion>
-        <PackageReleaseNotes>Several Maths classes added. README needs updating, but issued for use with LughSharpFramework, and README will be updated very soon.</PackageReleaseNotes>
+        <PackageReleaseNotes>Updates, mainly to ObjectMap, plus some general housekeeping</PackageReleaseNotes>
         <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
     </PropertyGroup>
 
