@@ -51,14 +51,6 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     public int Size { get; set; }
 
     /// <summary>
-    /// When true, <see cref="IEnumerator{T}" /> for collections will allocate a new
-    /// iterator for each invocation. When false, the iterator is reused and nested
-    /// use will throw an exception.
-    /// <para> Default is false. </para>
-    /// </summary>
-    public bool AllocateIterators { get; set; }
-
-    /// <summary>
     /// Returns the Values table for this ObjectMap.
     /// </summary>
     public TV?[] Values => ValueTable;
@@ -868,7 +860,7 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// <returns></returns>
     public virtual EntriesIterator GetEntries()
     {
-        if ( AllocateIterators )
+        if ( Collections.AllocateIterators )
         {
             return new EntriesIterator( this );
         }
@@ -908,7 +900,7 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// <returns></returns>
     public virtual ValuesIterator GetValues()
     {
-        if ( AllocateIterators )
+        if ( Collections.AllocateIterators )
         {
             return new ValuesIterator( this );
         }
@@ -949,7 +941,7 @@ public class ObjectMap< TK, TV > : IEnumerable< KeyValuePair< TK, TV > >
     /// <returns></returns>
     public virtual KeysIterator GetKeys()
     {
-        if ( AllocateIterators )
+        if ( Collections.AllocateIterators )
         {
             return new KeysIterator( this );
         }

@@ -44,9 +44,9 @@ public class SnapshotArrayList< T > : IEnumerable< T >
     // ========================================================================
 
     private T[]  _items;
-    private T[]? _recycled;
-    private T[]? _snapshot;
-    private int  _snapshotCount;
+//    private T[]? _recycled;
+//    private T[]? _snapshot;
+//    private int  _snapshotCount;
 
     // ========================================================================
 

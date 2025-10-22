@@ -274,7 +274,7 @@ public class OrderedMap< TK, TV > : ObjectMap< TK, TV >
     /// </summary>
     public override EntriesIterator GetEntries()
     {
-        if ( AllocateIterators )
+        if ( Collections.AllocateIterators )
         {
             return new OrderedMapEntries( this );
         }
@@ -313,7 +313,7 @@ public class OrderedMap< TK, TV > : ObjectMap< TK, TV >
     /// </summary>
     public override ValuesIterator GetValues()
     {
-        if ( AllocateIterators )
+        if ( Collections.AllocateIterators )
         {
             return new OrderedMapValues( this );
         }
@@ -352,7 +352,7 @@ public class OrderedMap< TK, TV > : ObjectMap< TK, TV >
     /// </summary>
     public override KeysIterator GetKeys()
     {
-        if ( AllocateIterators )
+        if ( Collections.AllocateIterators )
         {
             return new OrderedMapKeys( this );
         }
