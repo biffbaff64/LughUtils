@@ -149,9 +149,9 @@ public static class Logger
     /// <param name="callerLine"> The Line this message was sent from. </param>
     [Conditional( "DEBUG" )]
     public static void Error( string message,
-                                [CallerFilePath] string callerFilePath = "",
-                                [CallerMemberName] string callerMethod = "",
-                                [CallerLineNumber] int callerLine = 0 )
+                              [CallerFilePath] string callerFilePath = "",
+                              [CallerMemberName] string callerMethod = "",
+                              [CallerLineNumber] int callerLine = 0 )
     {
         if ( !IsEnabled( LOG_ERROR ) )
         {
@@ -242,20 +242,22 @@ public static class Logger
     /// </summary>
     /// <param name="ch"> The character to use, default is '-' </param>
     /// <param name="length"> The line length, default is 80. </param>
+    /// <param name="lineCount"> The number of lines to output, default is 1. </param>
     [Conditional( "DEBUG" )]
-    public static void Divider( char ch = '-', int length = 80 )
+    public static void Divider( char ch = '-', int length = 80, int lineCount = 1 )
     {
-        var sb = new StringBuilder( DEBUG_TAG );
+        // 1. Efficiently create the repeating line string once.
+        var lineContent = new string( ch, length );
 
-        sb.Append( " : " );
+        // 2. Prepend the tag and space.
+        var fullLine = DEBUG_TAG + " : " + lineContent;
 
-        for ( var i = 0; i < length; i++ )
+        // 3. Loop only to output the line the required number of times.
+        for ( var i = 0; i < lineCount; i++ )
         {
-            sb.Append( ch );
+            Console.WriteLine( fullLine );
+            WriteToFile( fullLine );
         }
-
-        Console.WriteLine( sb.ToString() );
-        WriteToFile( sb.ToString() );
     }
 
     /// <summary>
@@ -422,6 +424,16 @@ public static class Logger
     public static void EnableErrorLogging()
     {
         TraceLevel |= LOG_ERROR;
+    }
+
+    /// <summary>
+    /// Utility helper method which just outputs 'Done', which is done quite
+    /// frequently by me so why not have an unnecessary method for it...
+    /// </summary>
+    [Conditional( "DEBUG" )]
+    public static void Done()
+    {
+        Debug( "Done" );
     }
 
     #endregion public methods

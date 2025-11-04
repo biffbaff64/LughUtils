@@ -131,7 +131,7 @@ public partial class Guard
         /// <param name="argumentName">The name of the parameter that is to be checked.</param>
         /// <typeparam name="T">The type of the value.</typeparam>
         /// <exception cref="ArgumentException">
-        /// <paramref name="value"/> is less than the minimum value of greater than the maximum value.
+        /// <paramref name="value"/> is less than the minimum value or greater than the maximum value.
         /// </exception>
         [MethodImpl( MethodImplOptions.AggressiveInlining )]
         public static void BetweenOrEqualTo< T >( T value, T min, T max, string argumentName )

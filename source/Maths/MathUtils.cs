@@ -172,7 +172,7 @@ public class MathUtils
     /// </summary>
     public static bool RandomBool()
     {
-        return Convert.ToBoolean( _rand.Next( 1 ) );
+        return _rand.Next( 2 ) == 0;
     }
 
     /// <summary>
@@ -212,7 +212,7 @@ public class MathUtils
     /// </summary>
     public static int RandomSign()
     {
-        return 1 | ( _rand.Next() >> 31 );
+        return _rand.Next() >> 31;
     }
 
     /// <summary>
