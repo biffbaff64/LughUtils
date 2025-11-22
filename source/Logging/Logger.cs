@@ -227,7 +227,7 @@ public static class Logger
             : MakeCallerID( callerFilePath, callerMethod, callerLine );
 
         var str = CreateMessage( CHECKPOINT_TAG, callerID, "<Checkpoint>" );
-
+        
         Console.WriteLine( str );
         WriteToFile( str );
 
@@ -436,6 +436,20 @@ public static class Logger
         Debug( "Done" );
     }
 
+    [Conditional( "DEBUG" )]
+    public static void Block()
+    {
+        Divider();
+        Divider();
+    }
+    
+    [Conditional( "DEBUG" )]
+    public static void EndBlock()
+    {
+        Divider();
+        Divider();
+    }
+    
     #endregion public methods
 
     // ========================================================================

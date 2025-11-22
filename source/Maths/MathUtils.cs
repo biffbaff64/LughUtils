@@ -160,11 +160,11 @@ public class MathUtils
     }
 
     /// <summary>
-    /// Returns the next random number as a long.
+    /// Returns the next random number as a 'long'.
     /// </summary>
     public static long RandomLong()
     {
-        return ( long )_rand.NextDouble();
+        return ( long )_rand.NextInt64();
     }
 
     /// <summary>
